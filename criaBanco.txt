@@ -1,0 +1,107 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema forum
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema forum
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `forum` DEFAULT CHARACTER SET utf8 ;
+USE `forum` ;
+
+-- -----------------------------------------------------
+-- Table `forum`.`usuarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forum`.`usuarios` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(60) NOT NULL,
+  `usuario` VARCHAR(20) NOT NULL,
+  `senha` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(60) NOT NULL,
+  `datanasc` DATE NOT NULL,
+  `sexo` CHAR(1) NOT NULL,
+  `cidade` VARCHAR(30) NOT NULL,
+  `estado` VARCHAR(2) NOT NULL,
+  `cep` VARCHAR(9) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 64
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `forum`.`topicos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forum`.`topicos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `idAdm` INT(11) NOT NULL,
+  `categoria` VARCHAR(45) NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `detalhe` VARCHAR(500) NOT NULL,
+  `data` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idAdm_idx` (`idAdm` ASC) VISIBLE,
+  CONSTRAINT `idAdm`
+    FOREIGN KEY (`idAdm`)
+    REFERENCES `forum`.`usuarios` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `forum`.`usuario_topico`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forum`.`usuario_topico` (
+  `idUsuario` INT(11) NOT NULL,
+  `idTopico` INT(11) NOT NULL,
+  `ativo` CHAR(1) NULL,
+  INDEX `idUsuario_idx` (`idUsuario` ASC) VISIBLE,
+  INDEX `idTopico_idx` (`idTopico` ASC) VISIBLE,
+  CONSTRAINT `idTopico`
+    FOREIGN KEY (`idTopico`)
+    REFERENCES `forum`.`topicos` (`id`),
+  CONSTRAINT `idUsuario`
+    FOREIGN KEY (`idUsuario`)
+    REFERENCES `forum`.`usuarios` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `forum`.`comentarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forum`.`comentarios` (
+  `idComentador` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `comentario` VARCHAR(1000) NOT NULL,
+  `data` DATETIME NOT NULL,
+  `comentarioPrincipal` INT(11) NULL,
+  `topico` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idComentador_idx` (`idComentador` ASC) VISIBLE,
+  INDEX `topico_idx` (`topico` ASC) VISIBLE,
+  CONSTRAINT `idComentador`
+    FOREIGN KEY (`idComentador`)
+    REFERENCES `forum`.`usuarios` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `topico`
+    FOREIGN KEY (`topico`)
+    REFERENCES `forum`.`topicos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
